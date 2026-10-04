@@ -1,0 +1,32 @@
+name: Sync NuvioTV beta APK
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/sync-beta.yml'
+      - 'scripts/sync_beta.py'
+  schedule:
+    - cron: '17 */3 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: sync-nuvio-beta
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GITHUB_TOKEN: ${{ github.token }}
+      GH_REPO: ${{ github.repository }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Mirror latest official beta APK
+        run: python3 scripts/sync_beta.py
+
